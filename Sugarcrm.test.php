@@ -1,15 +1,57 @@
 <?php
 require_once( "Sugarcrm.class.php" );
+require_once( "sugarcrm.config.php" );
 
 class SugarcrmTest extends PHPUnit_Framework_TestCase
 {
-    public function setUp(){ }
+    protected $sc;
+    protected function setUp()
+    {
+        $this->sc = new Sugarcrm( URL, USERNAME, PASSWORD );
+        
+    }
 
-    public function tearDown(){ }
+    public function tearDown()
+    {
+        //unset( $this->sc );
+    }
+
+    public function testLogin()
+    {
+        $badSc = new Sugarcrm( URL, "aaa", "bbb" );
+        $this->assertFalse( $badSc->login());
+        // print put the error message
+        echo "Error Message: ".$badSc->error_message."\n";
+
+        // correct login 
+        $this->assertTrue( $this->sc-> login());
+    }
+
+    public function testGet_user_id()
+    {
+        $this->sc->login();
+        $this->sc->get_user_id();
+        //$this->assertTrue( $this->sc->get_user_id()); 
+        echo "User Id: ".$this->sc->user_id."\n";
+    }
+
+    public function testAdd_new_lead(){
+        $this->sc->add_new_lead( 
+            "steve", //$first_name, 
+            "smith", //$last_name, 
+            "lead source form newspapaer", //$lead_source_description, 
+            "status unknown", //$status_description, 
+            "steveSmith".rand(111, 999)."@one-k.com", //$email, 
+            "new", //$status, 
+            $this->sc->user_id, //$assigned_user_id
+            CAMPAIGN_ID
+        );
+    }
+
+    /*
     public function testAddRelationship(){
-        $sc = new Sugarcrm();
-        $sc->login();
-        $this->assertTrue( $sc -> linkContactToLead(
+
+        $this->sc->assertTrue( $sc -> linkContactToLead(
             "b9894f1a-4301-22d7-59d6-53da9deda499", //$module_id, opportunity id
             //"a5bb595d-838f-2dac-e068-53ce4b9aff47"//$related_ids, lead id
             "5b036ef1-d30a-5d3f-de25-53cdb0990390"

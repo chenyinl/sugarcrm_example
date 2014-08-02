@@ -1,18 +1,199 @@
 <?php
+/*
+ * A class for Sugar CRM API
+ */
+
+/*
+ * config file should have
+ *   define( "URL", "http://xx.xx.xx.xx/sugarcrm/service/v4_1/rest.php" );
+ *   define( "USERNAME" , "admin" );
+ *   define( "PASSWORD", "xxxxx" );
+ */
 require_once( "sugarcrm.config.php" );
 
+
 class Sugarcrm{
+    /* API URL */
+    private $url;
 
-    /* received from login process, like token */
-    private $session_id = false;
+    /* Login user name */
+    private $username;
 
-    // user id from the search result
+    /* Login Password */
+    private $password;
+
+    /* received from login process, it is like a token */
+    public $session_id = false;
+
+    /* lead id from the search result */
     public $lead_id = false;
 
+    /* lead status */
     public $lead_status = false;
 
-    // keep the user id after add new user. For test only
+    /* Keep the user id after add new user. For test only */
     public $user_id = false;
+
+    /* Error message */
+    public $error_message = false;
+
+    /* call CRUL
+     * This method is copied from Sugar CRM documentation site 
+     */
+
+    function __construct ( $url, $username, $password )
+    {
+        $this->url = $url;
+        $this->username = $username;
+        $this->password = $password;
+    }
+
+    private function call( $method, $parameters ){
+        // original code start buffer here
+        // ob_start();
+        $curl_request = curl_init();
+
+        curl_setopt($curl_request, CURLOPT_URL, $this->url );
+        curl_setopt($curl_request, CURLOPT_POST, 1);
+        curl_setopt($curl_request, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+        curl_setopt($curl_request, CURLOPT_HEADER, 1);
+        curl_setopt($curl_request, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl_request, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl_request, CURLOPT_FOLLOWLOCATION, 0);
+
+        $jsonEncodedData = json_encode($parameters);
+
+        $post = array(
+             "method" => $method,
+             "input_type" => "JSON",
+             "response_type" => "JSON",
+             "rest_data" => $jsonEncodedData
+        );
+
+        curl_setopt($curl_request, CURLOPT_POSTFIELDS, $post);
+        $result = curl_exec($curl_request);
+        curl_close($curl_request);
+
+        $result = explode("\r\n\r\n", $result, 2);
+        $response = json_decode($result[1]);
+        // send output buffer and turn off
+        // ob_end_flush(); 
+        return $response;        
+    } 
+    
+    /*
+     * login to Sugar CRM
+     * should return a session id if success
+     */
+    public function login()
+    {
+        $login_parameters = array(
+            "user_auth" => array(
+                "user_name" => $this->username,
+                "password" => md5( $this->password ),
+                "version" => "1"
+            ),
+            "application_name" => "RestTest",
+            "name_value_list" => array()
+        );
+
+        $login_result = $this->call( "login", $login_parameters);
+        if( isset( $login_result->id )){
+            $this->session_id = $login_result->id;
+            return true;
+        }else{
+            $this->error_message = $login_result->description;
+            return false;
+        }
+    }
+
+    /*
+     * Retrieves the id of the user currently logged in.
+     * mostly Admin; Admin id is 1;
+     */
+    public function get_user_id()
+    {
+        $get_user_id_parameters = array(
+            "session" => $this->session_id,
+        );
+
+        $result = $this->call( "get_user_id", $get_user_id_parameters );
+        if( isset( $result )){
+            $this->user_id = $result;
+            return true;
+        }else{
+            $this->error_message = "Cannot get user id";
+            return false;
+        }
+    }
+   
+    /*
+     * Add a new lead to Sugar CRM
+     */
+    public function add_new_lead( 
+        $first_name, 
+        $last_name, 
+        $lead_source_description, 
+        $status_description, 
+        $email, 
+        $status, 
+        $assigned_user_id, 
+        $campaign_id
+    ){
+        if( !$this->session_id ) $this->login();
+        $set_entry_parameters = array(
+            //session id
+            "session" => $this->session_id,
+
+            //The name of the module from which to retrieve records.
+            "module_name" => "Leads",
+
+            //Record attributes
+            "name_value_list" => array(
+                array(
+                    "name" => "last_name", 
+                    "value" => $last_name
+                ),
+                array(
+                    "name" => "first_name", 
+                    "value" => $first_name
+                ),
+                array(
+                    "name" => "email1", 
+                    "value" => $email),
+                array(
+                    "name" => "status", 
+                    "value" => $status
+                ),
+                array(
+                    "name" => "status_description", 
+                    "value" => $status_description
+                ),
+                array(
+                    "name" => "lead_source_description", 
+                    "value" => $lead_source_description
+                ),
+                array(
+                    "name" => "assigned_user_id", 
+                    "value" => $assigned_user_id
+                ),
+                array(
+                    "name" => "campaign_id", 
+                    "value" => $campaign_id
+                )
+            )
+        );
+
+        $set_entry_result = $this->call( "set_entry", $set_entry_parameters);
+        if( isset( $set_entry_result->id )){
+            $this->user_id = $set_entry_result->id;
+            return true;
+        } else {
+            $this->error_message = "Cannot create new lead";
+            return false;
+        }
+        
+    }
 
     public function getAllLead ()
     {
@@ -123,53 +304,8 @@ class Sugarcrm{
         
     }    
 
-    private function call( $method, $parameters ){
-        ob_start();
-        $curl_request = curl_init();
 
-        curl_setopt($curl_request, CURLOPT_URL, URL);
-        curl_setopt($curl_request, CURLOPT_POST, 1);
-        curl_setopt($curl_request, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-        curl_setopt($curl_request, CURLOPT_HEADER, 1);
-        curl_setopt($curl_request, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl_request, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_request, CURLOPT_FOLLOWLOCATION, 0);
 
-        $jsonEncodedData = json_encode($parameters);
-
-        $post = array(
-             "method" => $method,
-             "input_type" => "JSON",
-             "response_type" => "JSON",
-             "rest_data" => $jsonEncodedData
-        );
-
-        curl_setopt($curl_request, CURLOPT_POSTFIELDS, $post);
-        $result = curl_exec($curl_request);
-        curl_close($curl_request);
-
-        $result = explode("\r\n\r\n", $result, 2);
-        $response = json_decode($result[1]);
-        ob_end_flush();
-
-        return $response;        
-    } 
-    public function login()
-    {
-        $login_parameters = array(
-            "user_auth" => array(
-                "user_name" => USERNAME,
-                "password" => md5( PASSWORD ),
-                "version" => "1"
-            ),
-            "application_name" => "RestTest",
-            "name_value_list" => array()
-        );
-
-        $login_result = $this->call("login", $login_parameters);
-        $this->session_id = $login_result->id;
-        return true;
-    }
 
     public function addNew( 
         $first_name, 
@@ -283,66 +419,5 @@ class Sugarcrm{
         $set_entry_result = $this->call("get_entries", $get_entries_parameters);
         var_dump($set_entry_result);
         return true;
-    }
-    
-    public function createNewOpportunity( 
-        $name, 
-        $description, 
-        $amount
-    ){
-        if( !$this->session_id ) $this->login();
-        $set_entry_parameters = array(
-            //session id
-            "session" => $this->session_id,
-
-            //The name of the module from which to retrieve records.
-            "module_name" => "Opportunities",
-
-            //Record attributes
-            "name_value_list" => array(
-                array("name" => "name", "value" => $name),
-                array("name" => "description", "value" => $description),
-                array("name" => "amount", "value" => $amount)
-            )
-        );
-
-        $set_entry_result = $this->call("set_entry", $set_entry_parameters);
-        $id = $set_entry_result->id;
-        var_dump( $id );
-        return true;
-    }
-    
-    public function linkContactToLead(
-        $module_id, //contact id
-        //$linked_field_name, //linked field name
-        $related_id
-    ){
-        $set_relationship_parameters = array(
-            //session id
-            "session" => $this->session_id,
-            //The name of the module.
-            "module_name" => 'Opportunities',
-            //The ID of the specified module bean.
-            "module_id" => $module_id,
-            //The relationship name of the linked field from which to relate records.
-            "link_field_name" => 'leads',
-            //The list of record ids to relate
-            "related_ids" => array(
-                $related_id
-            ),
-            //Sets the value for relationship based fields
-            "name_value_list" => array(
-                array(
-                    //"name" => "contact_role",
-                    //"value" => "Other"
-                ),
-            ),
-            //Whether or not to delete the relationship. 0:create, 1:delete
-            "delete"=> 0,
-        );
-        $set_relationship_result = 
-            $this->call( "set_relationship", $set_relationship_parameters );
-        if($set_relationship_result->created == 1) return true;
-        if($set_relationship_result->failed == 1) return false;
     }
 }
