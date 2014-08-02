@@ -5,6 +5,8 @@ require_once( "sugarcrm.config.php" );
 class SugarcrmTest extends PHPUnit_Framework_TestCase
 {
     protected $sc;
+    protected $oppo_id;
+    protected $lead_id;
     protected function setUp()
     {
         $this->sc = new Sugarcrm( URL, USERNAME, PASSWORD );
@@ -46,25 +48,46 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
             $this->sc->user_id, //$assigned_user_id
             CAMPAIGN_ID
         );
+        
+        $this->lead_id = $this->sc->lead_id;
     }
 
     public function testAdd_new_opportunity(){
         $this->sc->add_new_opportunity( 
-            "steveSmithOpportunity", //$first_name, 
+            "steveSmithOpportunity".rand(11,99), //$first_name, 
             "This is a testing opportunity",
-            rand(1000, 9999), 
-            1
+            rand(1000, 9999)
         );
+        
+        $this->oppo_id = $this->sc->opportunity_id;
     }
 
 
-    /*
+    
     public function testAddRelationship(){
+        $this->sc->add_new_lead( 
+            "stevex", //$first_name, 
+            "smitxh", //$last_name, 
+            "lead source form newspapaer", //$lead_source_description, 
+            "status unknown", //$status_description, 
+            "steveSmith".rand(111, 999)."@one-k.com", //$email, 
+            "new", //$status, 
+            $this->sc->user_id, //$assigned_user_id
+            CAMPAIGN_ID
+        );
+         
+        $this->sc->add_new_opportunity( 
+            "steveSmithOpportunity".rand(11,99), //$first_name, 
+            "This is a testing opportunity",
+            rand(1000, 9999)
+        );
 
-        $this->sc->assertTrue( $sc -> linkContactToLead(
-            "b9894f1a-4301-22d7-59d6-53da9deda499", //$module_id, opportunity id
-            //"a5bb595d-838f-2dac-e068-53ce4b9aff47"//$related_ids, lead id
-            "5b036ef1-d30a-5d3f-de25-53cdb0990390"
+        //echo "lead id: ".$this->sc->lead_id."\n";
+        //echo "opport id: ".$this->sc->opportunity_id."\n";
+        
+        $this->assertTrue( $this->sc -> linkContactToLead(
+            $this->sc->opportunity_id, //$module_id, opportunity id
+            $this->sc->lead_id //$related_ids, lead id
         ));
     }
     /*

@@ -186,7 +186,7 @@ class Sugarcrm{
 
         $set_entry_result = $this->call( "set_entry", $set_entry_parameters);
         if( isset( $set_entry_result->id )){
-            $this->user_id = $set_entry_result->id;
+            $this->lead_id = $set_entry_result->id;
             return true;
         } else {
             $this->error_message = "Cannot create new lead";
@@ -202,8 +202,8 @@ class Sugarcrm{
     public function add_new_opportunity( 
          $name, 
          $description, 
-         $amount,
-         $opportunities_assigned_user
+         $amount
+         //$opportunities_assigned_user //not working
      ){
         if( !$this->session_id ) $this->login();
         $set_entry_parameters = array(
@@ -217,8 +217,9 @@ class Sugarcrm{
             "name_value_list" => array(
                  array("name" => "name", "value" => $name),
                  array("name" => "description", "value" => $description),
-                 array("name" => "amount", "value" => $amount),
-                 array("name" => "opportunities_assigned_user", $opportunities_assigned_user)
+                 array("name" => "amount", "value" => $amount)//,
+                 //array("name" => "opportunities_assigned_user", 
+                 //$opportunities_assigned_user)
              )
          );
  
@@ -467,5 +468,39 @@ class Sugarcrm{
         $set_entry_result = $this->call("get_entries", $get_entries_parameters);
         var_dump($set_entry_result);
         return true;
+    }
+    
+    public function linkContactToLead(
+        $module_id, //contact id
+        //$linked_field_name, //linked field name
+        $related_id
+    ){
+        $set_relationship_parameters = array(
+            //session id
+            "session" => $this->session_id,
+            //The name of the module.
+            "module_name" => 'Opportunities',
+            //The ID of the specified module bean.
+            "module_id" => $module_id,
+            //The relationship name of the linked field from which to relate records.
+            "link_field_name" => 'leads',
+            //The list of record ids to relate
+            "related_ids" => array(
+                $related_id
+            ),
+            //Sets the value for relationship based fields
+            "name_value_list" => array(
+                array(
+                    //"name" => "contact_role",
+                    //"value" => "Other"
+                ),
+            ),
+            //Whether or not to delete the relationship. 0:create, 1:delete
+            "delete"=> 0,
+        );
+        $set_relationship_result = 
+            $this->call( "set_relationship", $set_relationship_parameters );
+        if($set_relationship_result->created == 1) return true;
+        if($set_relationship_result->failed == 1) return false;
     }
 }
