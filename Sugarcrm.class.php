@@ -195,6 +195,54 @@ class Sugarcrm{
         
     }
 
+
+   /*
+    * Add a new opportunity to Sugar CRM
+    */
+    public function add_new_opportunity( 
+         $name, 
+         $description, 
+         $amount,
+         $opportunities_assigned_user
+     ){
+        if( !$this->session_id ) $this->login();
+        $set_entry_parameters = array(
+             //session id
+             "session" => $this->session_id,
+ 
+             //The name of the module from which to retrieve records.
+             "module_name" => "Opportunities",
+ 
+             //Record attributes
+            "name_value_list" => array(
+                 array("name" => "name", "value" => $name),
+                 array("name" => "description", "value" => $description),
+                 array("name" => "amount", "value" => $amount),
+                 array("name" => "opportunities_assigned_user", $opportunities_assigned_user)
+             )
+         );
+ 
+         $set_entry_result = $this->call("set_entry", $set_entry_parameters);
+         if( isset( $set_entry_result->id )){
+            $this->opportunity_id = $set_entry_result->id;
+            return true;
+        } else {
+            $this->error_message = "Cannot create new lead";
+            return false;
+        }
+     }
+
+
+
+
+
+
+
+
+
+
+
+
     public function getAllLead ()
     {
         if(! $this->session_id) $this->login();

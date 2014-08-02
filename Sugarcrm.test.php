@@ -48,6 +48,16 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testAdd_new_opportunity(){
+        $this->sc->add_new_opportunity( 
+            "steveSmithOpportunity", //$first_name, 
+            "This is a testing opportunity",
+            rand(1000, 9999), 
+            1
+        );
+    }
+
+
     /*
     public function testAddRelationship(){
 
