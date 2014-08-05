@@ -135,7 +135,8 @@ class Sugarcrm{
         $last_name, 
         $lead_source_description, 
         $status_description, 
-        $email, 
+        $email,
+        $email_opt_out,
         $status, 
         $assigned_user_id, 
         $campaign_id
@@ -161,6 +162,9 @@ class Sugarcrm{
                 array(
                     "name" => "email1", 
                     "value" => $email),
+                array(
+                    "name" => "email_opt_out", 
+                    "value" => $email_opt_out),
                 array(
                     "name" => "status", 
                     "value" => $status

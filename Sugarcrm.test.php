@@ -36,14 +36,15 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
         //$this->assertTrue( $this->sc->get_user_id()); 
         echo "User Id: ".$this->sc->user_id."\n";
     }
-
     public function testAdd_new_lead(){
+
         $this->sc->add_new_lead( 
-            "steve", //$first_name, 
-            "smith", //$last_name, 
+            "steveoo2", //$first_name, 
+            "smithoo2", //$last_name, 
             "lead source form newspapaer", //$lead_source_description, 
             "status unknown", //$status_description, 
             "steveSmith".rand(111, 999)."@one-k.com", //$email, 
+            "1", //email opt out
             "new", //$status, 
             $this->sc->user_id, //$assigned_user_id
             CAMPAIGN_ID
