@@ -1,0 +1,19 @@
+<phpunit
+    bootstrap = "test-bootstrap.php"
+    colors = "true"
+    strict = "true"
+    verbose = "true"
+    debug = "true"
+    stop_on_error = "true"
+    stop_on_failure = "true"
+>
+    <testsuites>
+      <testsuite name = "Sugar Detail Test">
+        <directory suffix="Test.php">test</directory>
+        <file>Sugarcrm.Test.php</file>
+      </testsuite>
+    </testsuites>
+    <php>
+      <includePath>src</includePath>
+    </php>
+</phpunit>

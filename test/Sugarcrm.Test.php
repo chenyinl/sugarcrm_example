@@ -1,6 +1,5 @@
 <?php
-require_once( "Sugarcrm.class.php" );
-require_once( "sugarcrm.config.php" );
+require_once( dirname(__FILE__)."/sugarcrm.config.php" );
 
 class SugarcrmTest extends PHPUnit_Framework_TestCase
 {
@@ -23,7 +22,7 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
         $badSc = new Sugarcrm( URL, "aaa", "bbb" );
         $this->assertFalse( $badSc->login());
         // print put the error message
-        echo "Error Message: ".$badSc->error_message."\n";
+        //echo "Error Message: ".$badSc->error_message."\n";
 
         // correct login 
         $this->assertTrue( $this->sc-> login());
@@ -39,12 +38,12 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
     public function testAdd_new_lead(){
 
         $this->sc->add_new_lead( 
-            "steveoo2", //$first_name, 
-            "smithoo2", //$last_name, 
+            "steveoo3", //$first_name, 
+            "smithoo3", //$last_name, 
             "lead source form newspapaer", //$lead_source_description, 
             "status unknown", //$status_description, 
             "steveSmith".rand(111, 999)."@one-k.com", //$email, 
-            "1", //email opt out
+            "0", //email opt out
             "new", //$status, 
             $this->sc->user_id, //$assigned_user_id
             CAMPAIGN_ID
@@ -72,6 +71,7 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
             "lead source form newspapaer", //$lead_source_description, 
             "status unknown", //$status_description, 
             "steveSmith".rand(111, 999)."@one-k.com", //$email, 
+            "0",
             "new", //$status, 
             $this->sc->user_id, //$assigned_user_id
             CAMPAIGN_ID
