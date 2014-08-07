@@ -1,7 +1,7 @@
-<phpunit
+<phpunit 
     bootstrap = "test-bootstrap.php"
     colors = "true"
-    strict = "true"
+    
     verbose = "true"
     debug = "true"
     stop_on_error = "true"
@@ -17,3 +17,7 @@
       <includePath>src</includePath>
     </php>
 </phpunit>
+
+<!--   
+    ... strict = "true"  
+    -->

@@ -1,6 +1,11 @@
 <?php
-require_once( dirname(__FILE__)."/sugarcrm.config.php" );
+//require_once( dirname(__FILE__)."/sugarcrm.config.php" );
+define( "URL", "http://54.214.51.240/scrm/service/v4_1/rest.php" );
 
+define( "USERNAME" , "admin" );
+
+define( "PASSWORD", "1kagency" );
+define( "CAMPAIGN_ID", "e32ed053-2293-a5ae-2405-53c5d29ca4b3");
 class SugarcrmTest extends PHPUnit_Framework_TestCase
 {
     protected $sc;
@@ -8,6 +13,7 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
     protected $lead_id;
     protected function setUp()
     {
+        
         $this->sc = new Sugarcrm( URL, USERNAME, PASSWORD );
         
     }

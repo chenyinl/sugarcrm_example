@@ -9,7 +9,7 @@
  *   define( "USERNAME" , "admin" );
  *   define( "PASSWORD", "xxxxx" );
  */
-require_once( "sugarcrm.config.php" );
+//require_once( "sugarcrm.config.php" );
 
 
 class Sugarcrm{

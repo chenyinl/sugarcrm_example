@@ -1,0 +1,5 @@
+{
+    "requrei_dev":{
+        "phpunit/phpunit": "4.1.*"
+    }
+}

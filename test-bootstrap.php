@@ -1,10 +1,16 @@
 <?php
+//include ("Sugarcrm.class.php");
+
 spl_autoload_register( function ( $className ){
     $classPath = str_replace(
-        array( "_", "\\"),
+        array( "_",  "\\"),
         DIRECTORY_SEPARATOR,
         $className
-    ).'.class.php';
-    echo $classPath;
+    ).'.php';
+    //$classPath = $className.".php";
+//    echo $classPath;
     require $classPath;
+    
 }); 
+
+require_once __DIR__ . '/vendor/autoload.php';
