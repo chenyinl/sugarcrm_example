@@ -37,10 +37,10 @@ class Sugarcrm{
     /* Error message */
     public $error_message = false;
 
-    /* call CRUL
-     * This method is copied from Sugar CRM documentation site 
+    /*
+     * Constructor
+     * given URL, user name and password
      */
-
     function __construct ( $url, $username, $password )
     {
         $this->url = $url;
@@ -48,6 +48,9 @@ class Sugarcrm{
         $this->password = $password;
     }
 
+    /* call CRUL
+     * This method is copied from Sugar CRM documentation site 
+     */
     private function call( $method, $parameters ){
         // original code start buffer here
         // ob_start();
@@ -75,6 +78,7 @@ class Sugarcrm{
         curl_close($curl_request);
 
         $result = explode("\r\n\r\n", $result, 2);
+        if( !isset($result[1])) return false;
         $response = json_decode($result[1]);
         // send output buffer and turn off
         // ob_end_flush(); 

@@ -3,12 +3,12 @@
  * Sugar CRM Config file
  */
 
-define( "URL", "http://54.214.51.240/scrm/service/v4_1/rest.php" );
-
+//define( "URL", "http://54.168.249.180/service/v4_1/rest.php" );
+define( "URL", "http://54.214.51.240/service/v4_1/rest.php" );
 define( "USERNAME" , "admin" );
 
+//define( "PASSWORD", "0nek@q3ncy" );
 define( "PASSWORD", "1kagency" );
-
 
 
 /*

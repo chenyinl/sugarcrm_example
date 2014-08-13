@@ -1,11 +1,14 @@
 <?php
 //require_once( dirname(__FILE__)."/sugarcrm.config.php" );
-define( "URL", "http://54.214.51.240/scrm/service/v4_1/rest.php" );
+//define( "URL", "http://54.214.51.240/scrm/service/v4_1/rest.php" );
+//define( "USERNAME" , "admin" );
+//define( "PASSWORD", "1kagency" );
+//define( "CAMPAIGN_ID", "e32ed053-2293-a5ae-2405-53c5d29ca4b3");
 
+define( "URL", "http://54.186.249.180/service/v4_1/rest.php" );
 define( "USERNAME" , "admin" );
-
-define( "PASSWORD", "1kagency" );
-define( "CAMPAIGN_ID", "e32ed053-2293-a5ae-2405-53c5d29ca4b3");
+define( "PASSWORD", "0nek@q3ncy" );
+define( "CAMPAIGN_ID", "");
 class SugarcrmTest extends PHPUnit_Framework_TestCase
 {
     protected $sc;
@@ -13,9 +16,7 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
     protected $lead_id;
     protected function setUp()
     {
-        
         $this->sc = new Sugarcrm( URL, USERNAME, PASSWORD );
-        
     }
 
     public function tearDown()
@@ -23,6 +24,10 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
         //unset( $this->sc );
     }
 
+    /**
+     * @covers login
+     * @covers call
+     */
     public function testLogin()
     {
         $badSc = new Sugarcrm( URL, "aaa", "bbb" );
@@ -33,14 +38,20 @@ class SugarcrmTest extends PHPUnit_Framework_TestCase
         // correct login 
         $this->assertTrue( $this->sc-> login());
     }
+    /**
+     * @depends testLogin
+     * @covers get_user_id
+     */
 
     public function testGet_user_id()
     {
         $this->sc->login();
         $this->sc->get_user_id();
-        //$this->assertTrue( $this->sc->get_user_id()); 
-        echo "User Id: ".$this->sc->user_id."\n";
+        $this->assertTrue( $this->sc->get_user_id());
+        // id could be 1 (admin) or a 8-4-4-4-8 string;
+        $this->assertNotEmpty( $this->sc->user_id );
     }
+    /*
     public function testAdd_new_lead(){
 
         $this->sc->add_new_lead( 
