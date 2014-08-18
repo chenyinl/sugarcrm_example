@@ -1,1 +1,1 @@
-Sugar CRM Example
+Sugar CRM Class Example with unit test
